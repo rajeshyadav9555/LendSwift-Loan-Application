@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply min-h-screen bg-slate-100 text-slate-900 antialiased;
+    background-image:
+      radial-gradient(circle at top left, rgba(31, 78, 121, 0.12), transparent 30%),
+      radial-gradient(circle at bottom right, rgba(39, 174, 96, 0.10), transparent 26%),
+      linear-gradient(180deg, #f8fafc 0%, #eef4f8 100%);
+  }
+
+  * {
+    @apply box-border;
+  }
+
+  ::selection {
+    @apply bg-primary/20 text-primary;
+  }
+}
+
+@layer components {
+  .field-label {
+    @apply mb-1 block text-sm font-semibold tracking-wide text-slate-700;
+  }
+
+  .field-input {
+    @apply w-full min-h-[48px] rounded-xl border border-slate-200 bg-white/90 px-3.5 py-2.5 text-sm text-slate-800 shadow-sm transition-all duration-200 placeholder:text-slate-400
+           focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10;
+  }
+
+  .field-input-error {
+    @apply border-danger focus:border-danger focus:ring-danger/15;
+  }
+
+  .btn-primary {
+    @apply inline-flex min-h-[46px] min-w-[46px] items-center justify-center rounded-xl bg-gradient-to-r from-primary to-[#163b5f] px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-primary/20 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary/25 disabled:cursor-not-allowed disabled:opacity-40;
+  }
+
+  .btn-secondary {
+    @apply inline-flex min-h-[46px] min-w-[46px] items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-primary shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:bg-slate-50;
+  }
+
+  .glass-panel {
+    @apply rounded-2xl border border-white/60 bg-white/80 shadow-[0_20px_45px_rgba(15,23,42,0.08)] backdrop-blur-sm;
+  }
+}
+
