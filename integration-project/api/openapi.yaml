@@ -1,0 +1,221 @@
+openapi: 3.0.3
+info:
+  title: Meridian SAP-FinSight Integration API
+  version: 1.0.0
+  description: Contract for controlled extraction from SAP S/4HANA and idempotent loading into FinSight.
+servers:
+  - url: https://integration.meridian.example/api/v1
+security:
+  - oauth2: [integration.read, integration.write]
+tags:
+  - name: Extraction
+  - name: Loading
+  - name: Operations
+paths:
+  /sap/journal-entries:
+    get:
+      tags: [Extraction]
+      summary: Read the next SAP ODP journal-entry delta
+      parameters:
+        - $ref: '#/components/parameters/DeltaToken'
+        - $ref: '#/components/parameters/CompanyCode'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          description: Delta page
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DeltaPage'
+              }
+        '429': { $ref: '#/components/responses/RateLimited' }
+        '503': { $ref: '#/components/responses/Unavailable' }
+  /sap/vendors:
+    get:
+      tags: [Extraction]
+      summary: Read vendor master delta
+      parameters: [{ $ref: '#/components/parameters/DeltaToken' }, { $ref: '#/components/parameters/PageSize' }]
+      responses:
+        '200':
+          description: Vendor delta page
+          content: { application/json: { schema: { $ref: '#/components/schemas/DeltaPage' } } }
+  /sap/customers:
+    get:
+      tags: [Extraction]
+      summary: Read customer master delta
+      parameters: [{ $ref: '#/components/parameters/DeltaToken' }, { $ref: '#/components/parameters/PageSize' }]
+      responses:
+        '200':
+          description: Customer delta page
+          content: { application/json: { schema: { $ref: '#/components/schemas/DeltaPage' } } }
+  /sap/cost-centres:
+    get:
+      tags: [Extraction]
+      summary: Read cost-centre master delta
+      parameters: [{ $ref: '#/components/parameters/DeltaToken' }, { $ref: '#/components/parameters/PageSize' }]
+      responses:
+        '200':
+          description: Cost-centre delta page
+          content: { application/json: { schema: { $ref: '#/components/schemas/DeltaPage' } } }
+  /sap/profit-centres:
+    get:
+      tags: [Extraction]
+      summary: Read profit-centre master delta
+      parameters: [{ $ref: '#/components/parameters/DeltaToken' }, { $ref: '#/components/parameters/PageSize' }]
+      responses:
+        '200':
+          description: Profit-centre delta page
+          content: { application/json: { schema: { $ref: '#/components/schemas/DeltaPage' } } }
+  /sap/purchase-orders:
+    get:
+      tags: [Extraction]
+      summary: Read purchase-order delta
+      parameters: [{ $ref: '#/components/parameters/DeltaToken' }, { $ref: '#/components/parameters/PageSize' }]
+      responses:
+        '200':
+          description: Purchase-order delta page
+          content: { application/json: { schema: { $ref: '#/components/schemas/DeltaPage' } } }
+  /finsight/journal-entries: 
+    post:
+      tags: [Loading]
+      summary: Load a validated journal-entry batch
+      parameters: [{ $ref: '#/components/parameters/IdempotencyKey' }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/JournalBatch' } } }
+      responses:
+        '202':
+          description: Accepted for loading
+          content: { application/json: { schema: { $ref: '#/components/schemas/LoadReceipt' } } }
+        '400': { $ref: '#/components/responses/InvalidRequest' }
+        '409': { $ref: '#/components/responses/Duplicate' }
+        '422': { $ref: '#/components/responses/BusinessRule' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+        '503': { $ref: '#/components/responses/Unavailable' }
+  /finsight/master-data/{domain}:
+    post:
+      tags: [Loading]
+      summary: Upsert a master-data batch
+      parameters:
+        - name: domain
+          in: path
+          required: true
+          schema: { type: string, enum: [vendors, customers, cost-centres, profit-centres] }
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/MasterDataBatch' } } }
+      responses:
+        '202': { description: Accepted }
+        '400': { $ref: '#/components/responses/InvalidRequest' }
+        '409': { $ref: '#/components/responses/Duplicate' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+  /operations/batches/{batchId}:
+    get:
+      tags: [Operations]
+      summary: Retrieve processing status and reconciliation reference
+      parameters: [{ $ref: '#/components/parameters/BatchId' }]
+      responses:
+        '200':
+          description: Batch status
+          content: { application/json: { schema: { $ref: '#/components/schemas/BatchStatus' } } }
+        '404': { description: Batch not found }
+components:
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://identity.meridian.example/oauth2/token
+          scopes:
+            integration.read: Read SAP extraction resources
+            integration.write: Write FinSight resources
+  parameters:
+    DeltaToken:
+      name: delta_token
+      in: query
+      schema: { type: string }
+    CompanyCode:
+      name: company_code
+      in: query
+      schema: { type: string, example: MC01 }
+    PageSize:
+      name: page_size
+      in: query
+      schema: { type: integer, minimum: 1, maximum: 5000, default: 1000 }
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema: { type: string, minLength: 16, maxLength: 128 }
+    BatchId:
+      name: batchId
+      in: path
+      required: true
+      schema: { type: string, pattern: '^BATCH-[A-Z0-9-]+$' }
+  schemas:
+    DeltaPage:
+      type: object
+      required: [batch_id, records, next_delta_token]
+      properties:
+        batch_id: { type: string }
+        records: { type: array, items: { type: object, additionalProperties: true } }
+        next_delta_token: { type: string }
+        has_more: { type: boolean }
+    JournalBatch:
+      type: object
+      required: [batch_id, mapping_version, entries]
+      properties:
+        batch_id: { type: string }
+        mapping_version: { type: string, example: gl-v1 }
+        entries: { type: array, minItems: 1, items: { $ref: '#/components/schemas/JournalEntry' } }
+    JournalEntry:
+      type: object
+      required: [document_id, posting_date, gl_account, amount_lc, currency, debit_credit]
+      properties:
+        document_id: { type: string }
+        posting_date: { type: string, format: date }
+        gl_account: { type: string }
+        amount_lc: { type: number, format: double }
+        currency: { type: string, pattern: '^[A-Z]{3}$' }
+        debit_credit: { type: string, enum: [DEBIT, CREDIT] }
+        company_code: { type: string }
+        cost_centre: { type: string, nullable: true }
+        profit_centre: { type: string, nullable: true }
+        source_lineage: { $ref: '#/components/schemas/Lineage' }
+    MasterDataBatch:
+      type: object
+      required: [batch_id, records]
+      properties:
+        batch_id: { type: string }
+        records: { type: array, items: { type: object, additionalProperties: true } }
+    Lineage:
+      type: object
+      required: [source_system, source_key, correlation_id]
+      properties:
+        source_system: { type: string, example: SAP-S4-PRD-100 }
+        source_key: { type: string }
+        correlation_id: { type: string, format: uuid }
+        extracted_at: { type: string, format: date-time }
+    LoadReceipt:
+      type: object
+      required: [batch_id, accepted_count, status]
+      properties:
+        batch_id: { type: string }
+        accepted_count: { type: integer }
+        status: { type: string, enum: [ACCEPTED, PARTIAL] }
+    BatchStatus:
+      type: object
+      required: [batch_id, status, reconciliation_status]
+      properties:
+        batch_id: { type: string }
+        status: { type: string, enum: [EXTRACTED, TRANSFORMED, LOADED, FAILED, DLQ] }
+        reconciliation_status: { type: string, enum: [PENDING, RECONCILED, VARIANCE, BREAK] }
+        dlq_count: { type: integer }
+  responses:
+    InvalidRequest: { description: Invalid request or schema validation failure }
+    Duplicate: { description: Existing idempotency key or business key }
+    BusinessRule: { description: FinSight business-rule or referential-integrity failure }
+    RateLimited:
+      description: Rate limit exceeded
+      headers: { Retry-After: { schema: { type: integer } } }
+    Unavailable: { description: Service temporarily unavailable }

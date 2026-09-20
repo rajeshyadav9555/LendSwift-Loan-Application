@@ -1,4 +1,5 @@
 import React from 'react';
+
 export default function ProgressBar({ steps, currentStep, activeSteps }) {
   const visibleSteps = steps.filter((s) => activeSteps.includes(s.number));
   const currentIndex = visibleSteps.findIndex((s) => s.number === currentStep);
@@ -7,7 +8,13 @@ export default function ProgressBar({ steps, currentStep, activeSteps }) {
   return (
     <nav aria-label={`Application progress: step ${currentIndex + 1} of ${visibleSteps.length}`}>
       <div className="mb-3 flex items-center justify-between gap-3 text-[11px] font-medium uppercase tracking-[0.12em] text-slate-500">
-        <span>Step {currentIndex + 1} of {visibleSteps.length}</span>
+        <span>
+          Step
+          {currentIndex + 1}
+          {' '}
+          of
+          {visibleSteps.length}
+        </span>
         <span className="hidden text-slate-700 sm:inline">{visibleSteps.find((s) => s.number === currentStep)?.title}</span>
       </div>
       <div className="mb-2 flex items-center gap-2">
@@ -23,7 +30,10 @@ export default function ProgressBar({ steps, currentStep, activeSteps }) {
       </div>
       <div className="flex items-center justify-between text-xs text-slate-600">
         <span>{visibleSteps.find((s) => s.number === currentStep)?.title}</span>
-        <span>{Math.round(pct)}%</span>
+        <span>
+          {Math.round(pct)}
+          %
+        </span>
       </div>
     </nav>
   );

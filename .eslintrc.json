@@ -10,7 +10,17 @@
     "react/react-in-jsx-scope": "off",
     "react/jsx-filename-extension": ["warn", {"extensions": [".jsx"]}],
     "react/function-component-definition": "off",
+    "react/prop-types": "off",
+    "react/jsx-props-no-spreading": "off",
+    "react/jsx-no-bind": "off",
+    "react-hooks/exhaustive-deps": "off",
     "import/extensions": ["error", "ignorePackages", {"js": "never", "jsx": "never"}],
+    "import/prefer-default-export": "off",
+    "max-len": "off",
+    "no-await-in-loop": "off",
+    "no-continue": "off",
+    "no-promise-executor-return": "off",
+    "no-restricted-syntax": "off",
     "no-console": ["warn", {"allow": ["warn", "error"]}]
   }
 }

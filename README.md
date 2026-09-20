@@ -33,3 +33,7 @@ npm run test:e2e:run
 ```
 
 > This is a frontend simulation. Identity verification, loan submission and NBFC/RBI status are demo behavior and are not connected to real financial services.
+
+## SAP-FinSight integration project
+
+The attached enterprise integration assignment is documented separately in [`integration-project/README.md`](integration-project/README.md). It includes the OpenAPI contract and deliverables for architecture, transformation mappings, resilience, reconciliation, monitoring, testing, and deployment.

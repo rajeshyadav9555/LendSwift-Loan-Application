@@ -9,13 +9,21 @@ import Select from '../common/Select';
 import CurrencyInput from '../common/CurrencyInput';
 import Input from '../common/Input';
 import StepNavigation from '../wizard/StepNavigation';
-import { formatINR, getLoanSummary, formatINRCurrency, checkEmiAffordability } from '../../utils/emiCalculator';
+import {
+  formatINR, getLoanSummary, formatINRCurrency, checkEmiAffordability,
+} from '../../utils/emiCalculator';
 
-export default function Step1LoanType({ formState, onNext, onBack, onSaveDraft, isFirstStep, isLastStep }) {
+export default function Step1LoanType({
+  formState, onNext, onBack, onSaveDraft, isFirstStep, isLastStep,
+}) {
   const schema = buildStep1Schema({ applicantAge: calculateAge(formState.dob) });
-  const { control, register, handleSubmit, watch, formState:{ errors } } = useForm({
-    resolver:zodResolver(schema),
-    defaultValues:{ loanType:formState.loanType || undefined, loanAmount:formState.loanAmount, loanTenure:formState.loanTenure, loanPurpose:formState.loanPurpose, referralCode:formState.referralCode }
+  const {
+    control, register, handleSubmit, watch, formState: { errors },
+  } = useForm({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      loanType: formState.loanType || undefined, loanAmount: formState.loanAmount, loanTenure: formState.loanTenure, loanPurpose: formState.loanPurpose, referralCode: formState.referralCode,
+    },
   });
   const loanType = watch('loanType');
   const loanAmount = Number(watch('loanAmount')) || 0;
@@ -28,20 +36,54 @@ export default function Step1LoanType({ formState, onNext, onBack, onSaveDraft, 
     <form onSubmit={handleSubmit(onNext)} noValidate>
       <h2 id="step-heading" tabIndex={-1} className="mb-1 text-xl font-semibold text-slate-900">What loan are you applying for?</h2>
       <p className="mb-6 text-sm text-slate-500">Your options adjust based on the loan type you pick.</p>
-      <Controller name="loanType" control={control} render={({ field }) => (
-        <RadioGroup legend="Loan type" name="loanType" value={field.value} onChange={field.onChange}
-          error={errors.loanType?.message} options={Object.entries(LOAN_TYPES).map(([value,cfg])=>({value,label:cfg.label}))} />
-      )}/>
-      {config && <>
-        <Controller name="loanAmount" control={control} render={({field}) => (
-          <CurrencyInput id="loanAmount" label="Loan amount" required value={field.value} onChange={field.onChange}
-            error={errors.loanAmount?.message} helpText={`Range: ₹${formatINR(config.minAmount)} – ₹${formatINR(config.maxAmount)}`} />
-        )}/>
-        <Select id="loanTenure" label="Loan tenure (months)" required error={errors.loanTenure?.message}
-          {...register('loanTenure',{valueAsNumber:true})}
-          options={Array.from({length:Math.floor((config.maxTenure-config.minTenure)/12)+1},(_,i)=>config.minTenure+i*12).map((m)=>({value:m,label:`${m} months`}))}/>
-        <Select id="loanPurpose" label="Purpose of loan" required placeholder="Select purpose" error={errors.loanPurpose?.message}
-          {...register('loanPurpose')} options={config.purposes.map((p)=>({value:p,label:p}))}/>
+      <Controller
+        name="loanType"
+        control={control}
+        render={({ field }) => (
+          <RadioGroup
+            legend="Loan type"
+            name="loanType"
+            value={field.value}
+            onChange={field.onChange}
+            error={errors.loanType?.message}
+            options={Object.entries(LOAN_TYPES).map(([value, cfg]) => ({ value, label: cfg.label }))}
+          />
+        )}
+      />
+      {config && (
+      <>
+        <Controller
+          name="loanAmount"
+          control={control}
+          render={({ field }) => (
+            <CurrencyInput
+              id="loanAmount"
+              label="Loan amount"
+              required
+              value={field.value}
+              onChange={field.onChange}
+              error={errors.loanAmount?.message}
+              helpText={`Range: ₹${formatINR(config.minAmount)} – ₹${formatINR(config.maxAmount)}`}
+            />
+          )}
+        />
+        <Select
+          id="loanTenure"
+          label="Loan tenure (months)"
+          required
+          error={errors.loanTenure?.message}
+          {...register('loanTenure', { valueAsNumber: true })}
+          options={Array.from({ length: Math.floor((config.maxTenure - config.minTenure) / 12) + 1 }, (_, i) => config.minTenure + i * 12).map((m) => ({ value: m, label: `${m} months` }))}
+        />
+        <Select
+          id="loanPurpose"
+          label="Purpose of loan"
+          required
+          placeholder="Select purpose"
+          error={errors.loanPurpose?.message}
+          {...register('loanPurpose')}
+          options={config.purposes.map((p) => ({ value: p, label: p }))}
+        />
 
         <div className="mt-6 overflow-hidden rounded-2xl border border-primary/10 bg-gradient-to-br from-primary/5 via-white to-emerald-50 p-4 shadow-sm">
           <div className="mb-3 flex items-center justify-between gap-3">
@@ -61,7 +103,10 @@ export default function Step1LoanType({ formState, onNext, onBack, onSaveDraft, 
             </div>
             <div className="rounded-xl bg-white p-3 shadow-sm">
               <p className="text-[11px] uppercase tracking-[0.12em] text-slate-500">Interest rate</p>
-              <p className="mt-1 text-lg font-bold text-slate-800">{summary.annualRate}%</p>
+              <p className="mt-1 text-lg font-bold text-slate-800">
+                {summary.annualRate}
+                %
+              </p>
             </div>
             <div className="rounded-xl bg-white p-3 shadow-sm">
               <p className="text-[11px] uppercase tracking-[0.12em] text-slate-500">Total payable</p>
@@ -75,9 +120,10 @@ export default function Step1LoanType({ formState, onNext, onBack, onSaveDraft, 
               : 'Enter your monthly income later to check affordability more accurately.'}
           </p>
         </div>
-      </>}
-      <Input id="referralCode" label="Referral code" error={errors.referralCode?.message} {...register('referralCode')}/>
-      <StepNavigation onBack={onBack} onNext={handleSubmit(onNext)} onSaveDraft={onSaveDraft} isFirstStep={isFirstStep} isLastStep={isLastStep}/>
+      </>
+      )}
+      <Input id="referralCode" label="Referral code" error={errors.referralCode?.message} {...register('referralCode')} />
+      <StepNavigation onBack={onBack} onNext={handleSubmit(onNext)} onSaveDraft={onSaveDraft} isFirstStep={isFirstStep} isLastStep={isLastStep} />
     </form>
   );
 }

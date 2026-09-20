@@ -31,7 +31,7 @@ export function getLoanSummary(loanType, principal, tenureMonths) {
     emi: Math.round(emi),
     totalPayable: Math.round(totalPayable),
     totalInterest: Math.round(totalPayable - principal),
-    processingFee: Math.round(calculateProcessingFee(principal))
+    processingFee: Math.round(calculateProcessingFee(principal)),
   };
 }
 

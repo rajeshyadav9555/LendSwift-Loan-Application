@@ -43,5 +43,7 @@ export function useFormPersistence() {
     if (pendingDraft) clearDraft(pendingDraft.loanType);
     setPendingDraft(null);
   }
-  return { pendingDraft, checked, dismiss, discard };
+  return {
+    pendingDraft, checked, dismiss, discard,
+  };
 }

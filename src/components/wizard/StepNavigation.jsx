@@ -1,5 +1,8 @@
 import React from 'react';
-export default function StepNavigation({ onBack, onNext, onSaveDraft, isFirstStep, isLastStep, isSubmitting }) {
+
+export default function StepNavigation({
+  onBack, onNext, onSaveDraft, isFirstStep, isLastStep, isSubmitting,
+}) {
   return (
     <div className="mt-8 flex items-center justify-between gap-3 border-t border-slate-200 pt-6">
       <button type="button" onClick={onBack} disabled={isFirstStep} className="btn-secondary" style={{ visibility: isFirstStep ? 'hidden' : 'visible' }}>Back</button>

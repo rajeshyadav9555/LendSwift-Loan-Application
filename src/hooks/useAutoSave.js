@@ -16,7 +16,7 @@ export async function persistDraft(formState, loanType, currentStep) {
       version: SCHEMA_VERSION,
       timestamp: new Date().toISOString(),
       step: currentStep,
-      loanType
+      loanType,
     };
 
     window.localStorage.setItem(draftKey(loanType), encrypted);
@@ -28,7 +28,9 @@ export async function persistDraft(formState, loanType, currentStep) {
   }
 }
 
-export function useAutoSave(formState, { loanType, currentStep, interval = 30000, enabled = true }) {
+export function useAutoSave(formState, {
+  loanType, currentStep, interval = 30000, enabled = true,
+}) {
   const timerRef = useRef(null);
   const [lastSavedAt, setLastSavedAt] = useState(null);
   const [showToast, setShowToast] = useState(false);

@@ -1,16 +1,28 @@
 export const LOAN_TYPES = {
   personal: {
-    label: 'Personal Loan', minAmount: 50000, maxAmount: 1000000, minTenure: 12, maxTenure: 60,
-    purposes: ['Debt Consolidation', 'Medical Expense', 'Travel', 'Wedding', 'Other']
+    label: 'Personal Loan',
+    minAmount: 50000,
+    maxAmount: 1000000,
+    minTenure: 12,
+    maxTenure: 60,
+    purposes: ['Debt Consolidation', 'Medical Expense', 'Travel', 'Wedding', 'Other'],
   },
   home: {
-    label: 'Home Loan', minAmount: 500000, maxAmount: 10000000, minTenure: 60, maxTenure: 360,
-    purposes: ['Purchase', 'Construction', 'Renovation', 'Balance Transfer']
+    label: 'Home Loan',
+    minAmount: 500000,
+    maxAmount: 10000000,
+    minTenure: 60,
+    maxTenure: 360,
+    purposes: ['Purchase', 'Construction', 'Renovation', 'Balance Transfer'],
   },
   business: {
-    label: 'Business Loan', minAmount: 100000, maxAmount: 5000000, minTenure: 12, maxTenure: 120,
-    purposes: ['Working Capital', 'Equipment Purchase', 'Expansion', 'Inventory']
-  }
+    label: 'Business Loan',
+    minAmount: 100000,
+    maxAmount: 5000000,
+    minTenure: 12,
+    maxTenure: 120,
+    purposes: ['Working Capital', 'Equipment Purchase', 'Expansion', 'Inventory'],
+  },
 };
 export function isCoApplicantStepRequired(loanType, loanAmount) {
   if (loanType === 'home') return true;

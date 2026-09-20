@@ -16,7 +16,9 @@ function canvasToBlob(canvas, quality) {
 }
 export async function compressImage(file) {
   if (!file.type.startsWith('image/')) {
-    return { file, originalSize: file.size, compressedSize: file.size, compressed: false };
+    return {
+      file, originalSize: file.size, compressedSize: file.size, compressed: false,
+    };
   }
   const { img, url } = await loadImage(file);
   const scale = Math.min(1, MAX_WIDTH / img.width);
@@ -32,7 +34,9 @@ export async function compressImage(file) {
     blob = await canvasToBlob(canvas, quality);
   }
   const compressedFile = new File([blob], file.name, { type: 'image/jpeg' });
-  return { file: compressedFile, originalSize: file.size, compressedSize: compressedFile.size, compressed: true, finalQuality: quality };
+  return {
+    file: compressedFile, originalSize: file.size, compressedSize: compressedFile.size, compressed: true, finalQuality: quality,
+  };
 }
 export function formatFileSize(bytes) {
   if (bytes < 1024) return `${bytes} B`;

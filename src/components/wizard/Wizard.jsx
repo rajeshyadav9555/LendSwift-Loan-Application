@@ -13,14 +13,14 @@ import Step7Documents from '../steps/Step7Documents';
 import Step8Review from '../steps/Step8Review';
 
 export const STEP_DEFS = [
-  { number:1, title:'Loan type & amount', Component:Step1LoanType },
-  { number:2, title:'Personal information', Component:Step2PersonalInfo },
-  { number:3, title:'Identity verification', Component:Step3KYC },
-  { number:4, title:'Address', Component:Step4Address },
-  { number:5, title:'Employment & income', Component:Step5Employment },
-  { number:6, title:'Co-applicant', Component:Step6CoApplicant },
-  { number:7, title:'Documents & signature', Component:Step7Documents },
-  { number:8, title:'Review & submit', Component:Step8Review }
+  { number: 1, title: 'Loan type & amount', Component: Step1LoanType },
+  { number: 2, title: 'Personal information', Component: Step2PersonalInfo },
+  { number: 3, title: 'Identity verification', Component: Step3KYC },
+  { number: 4, title: 'Address', Component: Step4Address },
+  { number: 5, title: 'Employment & income', Component: Step5Employment },
+  { number: 6, title: 'Co-applicant', Component: Step6CoApplicant },
+  { number: 7, title: 'Documents & signature', Component: Step7Documents },
+  { number: 8, title: 'Review & submit', Component: Step8Review },
 ];
 
 export default function Wizard({ onSubmitted }) {
@@ -33,9 +33,9 @@ export default function Wizard({ onSubmitted }) {
   const { showToast } = useAutoSave(formState, { loanType: formState.loanType, currentStep, enabled: !!formState.loanType });
 
   useEffect(() => {
-    dispatch({ type:'SET_STEP', payload:currentStep });
+    dispatch({ type: 'SET_STEP', payload: currentStep });
     document.getElementById('step-heading')?.focus();
-    window.scrollTo({ top:0, behavior:'smooth' });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [currentStep, dispatch]);
 
   async function handleSaveDraft() {
@@ -51,7 +51,7 @@ export default function Wizard({ onSubmitted }) {
   }
 
   function goNext(stepData) {
-    dispatch({ type:'UPDATE_FIELDS', payload:stepData });
+    dispatch({ type: 'UPDATE_FIELDS', payload: stepData });
     const merged = { ...formState, ...stepData };
     let next = currentStep + 1;
     if (next === 6 && !isCoApplicantStepRequired(merged.loanType, merged.loanAmount)) next = 7;
@@ -64,14 +64,14 @@ export default function Wizard({ onSubmitted }) {
   }
   function handleSubmit(stepData) {
     const submitted = { ...formState, ...stepData };
-    dispatch({ type:'UPDATE_FIELDS', payload:stepData });
+    dispatch({ type: 'UPDATE_FIELDS', payload: stepData });
     clearDraft(formState.loanType);
     const applicationId = `LS-${Date.now().toString().slice(-8)}`;
     onSubmitted?.({ ...submitted, applicationId });
   }
 
   const activeDef = STEP_DEFS.find((s) => s.number === currentStep);
-  const Component = activeDef.Component;
+  const { Component } = activeDef;
   return (
     <div className="mx-auto max-w-4xl">
       <div className="mb-5 rounded-2xl border border-slate-200/80 bg-white/75 p-4 shadow-[0_12px_32px_rgba(15,23,42,0.06)] backdrop-blur-sm sm:p-5">
@@ -86,8 +86,15 @@ export default function Wizard({ onSubmitted }) {
       </div>
       {(showToast || manualSaveNotice) && <div className="fixed bottom-4 right-4 rounded-xl bg-slate-900 px-4 py-2 text-xs font-medium text-white shadow-2xl shadow-slate-900/30" role="status">Draft saved</div>}
       <div className="glass-panel mt-6 p-5 sm:p-8">
-        <Component formState={formState} onNext={currentStep===8 ? handleSubmit : goNext} onBack={goBack} onSaveDraft={handleSaveDraft}
-          isFirstStep={currentStep===1} isLastStep={currentStep===8} goToStep={setCurrentStep} />
+        <Component
+          formState={formState}
+          onNext={currentStep === 8 ? handleSubmit : goNext}
+          onBack={goBack}
+          onSaveDraft={handleSaveDraft}
+          isFirstStep={currentStep === 1}
+          isLastStep={currentStep === 8}
+          goToStep={setCurrentStep}
+        />
       </div>
     </div>
   );

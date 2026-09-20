@@ -8,17 +8,32 @@ function ResumeModal({ pendingDraft, onResume, onDiscard }) {
   const savedAt = new Date(pendingDraft.meta.timestamp).toLocaleString('en-IN');
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50"
-      role="dialog" aria-modal="true" aria-labelledby="resume-title">
+    <div
+      className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="resume-title"
+    >
       <div className="bg-white rounded-lg max-w-sm w-full p-6">
         <h2 id="resume-title" className="text-lg font-semibold text-gray-900 mb-2">
           Resume your application?
         </h2>
         <p className="text-sm text-gray-600 mb-1">
-          You have a saved {pendingDraft.loanType} loan application from {savedAt}.
+          You have a saved
+          {' '}
+          {pendingDraft.loanType}
+          {' '}
+          loan application from
+          {' '}
+          {savedAt}
+          .
         </p>
         <p className="text-sm text-gray-600 mb-6">
-          You were on step {pendingDraft.meta.step} of 8.
+          You were on step
+          {' '}
+          {pendingDraft.meta.step}
+          {' '}
+          of 8.
         </p>
         <div className="flex gap-3">
           <button type="button" onClick={onDiscard} className="btn-secondary flex-1">Start fresh</button>
@@ -48,7 +63,10 @@ function AppShell() {
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100 text-2xl shadow-inner shadow-emerald-200/80">✅</div>
           <h1 className="mb-2 text-2xl font-bold text-primary">Application submitted</h1>
           <p className="text-base text-slate-600">
-            Thank you — your reference is <strong className="text-slate-900">{submittedData.applicationId}</strong>.
+            Thank you — your reference is
+            {' '}
+            <strong className="text-slate-900">{submittedData.applicationId}</strong>
+            .
           </p>
         </div>
       </div>
